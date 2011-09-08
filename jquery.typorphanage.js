@@ -21,22 +21,20 @@
         
         // bind events
         if(settings.autoupdate){
-          
+          methods.startAutoUpdate.apply(this);      
         }
         
-        methods.update({ data: {typorphanage: this} });
+        methods.update.apply(this);
       });
 
     },
     
     startAutoUpdate: function(){
-      this.autoUpdater = setInterval( methods.update.apply({data: {typorphanage: this}}, this), 100 );
-      // $(window).bind('resize.typorphanage', {typorphanage: this}, methods.update); // can't decide if this ie better then using a data object... I think it might be.
-      $(this).bind('change.typorphanage', {typorphanage: this}, methods.update);
+      this.autoUpdater = setInterval( jQuery.proxy( methods.update, this), 1000 );
     },
     
     stopAutoUpdate: function(){
-      
+      clearInterval(this.autoUpdater);
     },
     
     destroy : function( ) {
@@ -52,14 +50,17 @@
     
     update : function( evt ) {
       // this is DOMWindow
-      var $paras = $(evt.data.typorphanage).children(settings.elements);
+      
+      console.log('updating', this, settings)
+      
+      var $paras = $(this).children(settings.elements);
       $paras.each(function(){
         var txt = $(this).html().replace(/(.*)&nbsp;/, "$1 ");
         var parts = txt.split(' ');
         if(parts.length > 1) parts[parts.length - 2] += "&nbsp;"+parts.pop();
         $(this).html(parts.join(' '));
       });
-      return evt.data.typorphanage;
+      return $(this);
     }
   };
 
